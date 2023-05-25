@@ -125,5 +125,5 @@ for epoch in range(10):
     
     if minLoss>lossValidationHist[epoch]:
         minLoss = lossValidationHist[epoch]
-        bestWeights1 = net.state_dict().copy()
+        bestWeights = net.state_dict().copy()
         epochSave = epoch
