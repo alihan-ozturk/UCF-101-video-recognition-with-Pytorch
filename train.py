@@ -18,8 +18,8 @@ class customDataset(Dataset):
             self.videoList = f.read().splitlines()
         with open(classInd) as f:
             classList = f.read().splitlines()
-            self.encodeClass = {x.split(" ")[1] : int(x.split(" ")[0]) for x in classList}
-            self.decodeClass = {int(x.split(" ")[0]) : x.split(" ")[1] for x in classList}
+            self.encodeClass = {x.split(" ")[1] : int(x.split(" ")[0]) - 1 for x in classList}
+            self.decodeClass = {int(x.split(" ")[0]) -1 : x.split(" ")[1] for x in classList}
         self.subsample = subsample
         self.n = len(classList)
         self.size = size
@@ -34,7 +34,7 @@ class customDataset(Dataset):
         video = video[np.linspace(0, len(video)-1, self.subsample, dtype="int")]
         if video.shape[2:] != self.size:
             video = F1.resize(video, size=self.size, antialias=False)
-        return video/255, label-1
+        return video/255, label
 
 trainingData = customDataset("trainlist01.txt", "classInd.txt", 8)
 testData = customDataset("testlist01.txt", "classInd.txt", 8)
@@ -125,5 +125,5 @@ for epoch in range(10):
     
     if minLoss>lossValidationHist[epoch]:
         minLoss = lossValidationHist[epoch]
-        bestWeights = net.state_dict().copy()
+        bestWeights1 = net.state_dict().copy()
         epochSave = epoch
