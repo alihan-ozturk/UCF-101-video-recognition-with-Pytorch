@@ -61,7 +61,6 @@ class Net(nn.Module):
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
         x = F.relu(self.conv4(x))
-        
         x = self.maxpool(x)
         x = torch.flatten(x, 1)
         x = self.dropout(x)
