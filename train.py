@@ -34,33 +34,34 @@ class customDataset(Dataset):
         video = video[np.linspace(0, len(video)-1, self.subsample, dtype="int")]
         if video.shape[2:] != self.size:
             video = F1.resize(video, size=self.size, antialias=False)
+        video = F1.rgb_to_grayscale(video).transpose(0,1)
         return video/255, label
 
 trainingData = customDataset("trainlist01.txt", "classInd.txt", 8)
 testData = customDataset("testlist01.txt", "classInd.txt", 8)
 
-trainDataloader = DataLoader(trainingData, batch_size=32, shuffle=True)
-validationDataloader = DataLoader(testData, batch_size=32, shuffle=False)
+trainDataloader = DataLoader(trainingData, batch_size=32, shuffle=True, pin_memory=True)
+validationDataloader = DataLoader(testData, batch_size=32, shuffle=False, pin_memory=True)
 
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv3d(8, 8, (3, 3, 3))
-        self.conv2 = nn.Conv3d(8, 16, (1, 3, 3))
-        self.conv3 = nn.Conv3d(16, 24, (1, 3, 3))
-        self.conv4 = nn.Conv3d(24, 32, (1, 5, 5))
+        self.conv1 = nn.Conv3d(1, 8, 3)
+        self.conv2 = nn.Conv3d(8, 16, 3)
+        self.conv3 = nn.Conv3d(16, 24, 3)
+        self.conv4 = nn.Conv3d(24, 32, 2)
         self.dropout = nn.Dropout(p=0.2)
         self.maxpool = nn.MaxPool3d((1, 3, 3))
-        self.fc1 = nn.Linear(25344, 64)
-        self.fc2 = nn.Linear(64, 64)
-        self.fc3 = nn.Linear(64, trainingData.n)
+        self.fc1 = nn.Linear(256256, 64)
+        self.fc2 = nn.Linear(64, 128)
+        self.fc3 = nn.Linear(128, trainingData.n)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
-        x = self.maxpool(x)
         x = F.relu(self.conv4(x))
+        
         x = self.maxpool(x)
         x = torch.flatten(x, 1)
         x = self.dropout(x)
@@ -68,6 +69,7 @@ class Net(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
+
 
 def accuracy(outputs, labels):
     with torch.no_grad():
