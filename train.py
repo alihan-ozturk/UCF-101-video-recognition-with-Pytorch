@@ -75,7 +75,7 @@ class Net(nn.Module):
 def accuracy(outputs, labels):
     with torch.no_grad():
         eq = outputs.argmax(1).to("cpu") == labels
-        return eq.sum()/eq.numel()
+        return (eq.sum() / eq.numel()).numpy()
 
 net = Net().to("cuda")
 criterion = nn.CrossEntropyLoss()
