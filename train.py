@@ -46,20 +46,22 @@ validationDataloader = DataLoader(testData, batch_size=32, shuffle=False, pin_me
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
-        self.conv1 = nn.Conv3d(1, 8, 3)
-        self.conv2 = nn.Conv3d(8, 16, 3)
-        self.conv3 = nn.Conv3d(16, 24, 3)
-        self.conv4 = nn.Conv3d(24, 32, 2)
+        self.conv1 = nn.Conv3d(1, 16, 3)
+        self.conv2 = nn.Conv3d(16, 32, 3)
+        self.conv3 = nn.Conv3d(32, 64, 3)
+        self.conv4 = nn.Conv3d(64, 128, 2)
         self.dropout = nn.Dropout(p=0.2)
         self.maxpool = nn.MaxPool3d((1, 3, 3))
-        self.fc1 = nn.Linear(256256, 64)
-        self.fc2 = nn.Linear(64, 128)
+        self.fc1 = nn.Linear(11264, 128)
+        self.fc2 = nn.Linear(128, 128)
         self.fc3 = nn.Linear(128, trainingData.n)
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
+        x = self.maxpool(x)
         x = F.relu(self.conv3(x))
+        x = self.maxpool(x)
         x = F.relu(self.conv4(x))
         x = self.maxpool(x)
         x = torch.flatten(x, 1)
