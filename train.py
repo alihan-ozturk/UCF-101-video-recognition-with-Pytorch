@@ -50,7 +50,7 @@ class Net(nn.Module):
         self.conv2 = nn.Conv3d(16, 32, 3)
         self.conv3 = nn.Conv3d(32, 64, 3)
         self.conv4 = nn.Conv3d(64, 128, 2)
-        self.dropout = nn.Dropout(p=0.2)
+        self.dropout = nn.Dropout(p=0.1)
         self.maxpool = nn.MaxPool3d((1, 3, 3))
         self.fc1 = nn.Linear(11264, 128)
         self.fc2 = nn.Linear(128, 128)
@@ -87,7 +87,7 @@ accuracyTrainHist = []
 accuracyValidationHist = []
 minLoss = float('inf')
 
-for epoch in range(10):
+for epoch in range(300):
     print("epoch",epoch+1)
     
     runningTrainLoss = 0.0
